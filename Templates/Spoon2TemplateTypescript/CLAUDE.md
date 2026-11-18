@@ -14,10 +14,10 @@ The runtime is JavaScriptCore plus Hammerspoon, **not Node**. Do not use Node AP
 
 - `npm run typecheck`: type-check without emitting (`tsc --noEmit`). Run this after every code change.
 - `npm run build`: clean `build/`, compile `src/` with `tsc`, then copy non-TypeScript assets (e.g. `spoon.json`) into `build/`.
-- `npm run package`: build, then create `package/<name>.spoon2` from `build/`. `<name>` comes from `spoon.json`.
-- `npm run clean`: remove `build/` and `package/`.
+- `npm run package`: build, then create `spoons/<name>.spoon2` from `build/`. `<name>` comes from `spoon.json`.
+- `npm run clean`: remove `build/` and `spoons/`.
 
-`build/` and `package/` are generated and git-ignored. Never edit them by hand.
+`build/` and `spoons/` are generated and git-ignored. Never edit them by hand.
 
 ## Layout
 
