@@ -20,7 +20,7 @@ hs.spoons.load("{{ name }}");
 
 Installing does not load a spoon, and loading does not start it. Call `hs.spoons["{{ name }}"].start()` to run it.
 
-## Scripts
+{{ repoInstall }}## Scripts
 
 | Script | Description |
 | --- | --- |
