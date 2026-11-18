@@ -4,7 +4,9 @@ Guidance for Claude Code when working in this repository.
 
 ## Background
 
-Spoon2Template is a template for building [Hammerspoon 2](https://github.com/cmsj/Hammerspoon2) spoons in plain JavaScript. Hammerspoon 2 is a macOS app that embeds JavaScriptCore and exposes macOS APIs to user JavaScript.
+{{ name }} is a [Hammerspoon 2](https://github.com/cmsj/Hammerspoon2) spoon written in plain JavaScript. Hammerspoon 2 is a macOS app that embeds JavaScriptCore and exposes macOS APIs to user JavaScript.
+
+**Purpose:** {{ description }}
 
 There is no build step, no `package.json`, no TypeScript and no `node_modules`. The files in this repository are the spoon: what you edit is what Hammerspoon 2 loads.
 
