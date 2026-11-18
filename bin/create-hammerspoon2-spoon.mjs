@@ -31,7 +31,7 @@ Options:
       --no-install                        TypeScript only: don't run npm install
   -h, --help                              Show this help
 
-<SpoonName> should be PascalCase (e.g. MySpoon). It must start with a letter, contain only letters, digits, "_" and "-",
+<SpoonName> (e.g. MySpoon) must start with a letter, contain only letters, digits, "_" and "-",
 and not be the name of an hs.spoons member (load, install, available, update, uninstall, installed, use).`;
 
 function fail(message) {
@@ -132,7 +132,7 @@ async function main() {
     if (positionals.length !== 1) fail(`expected exactly one <SpoonName>\n\n${USAGE}`);
 
     const name = positionals[0];
-    if (!NAME_PATTERN.test(name)) fail(`invalid spoon name "${name}": use letters, digits, "_" and "-", starting with a letter (PascalCase recommended, e.g. MySpoon)`);
+    if (!NAME_PATTERN.test(name)) fail(`invalid spoon name "${name}": use letters, digits, "_" and "-", starting with a letter (e.g. MySpoon)`);
     if (RESERVED_NAMES.has(name)) fail(`"${name}" is reserved: it is the name of an hs.spoons member (reserved: ${[...RESERVED_NAMES].join(", ")})`);
 
     const templateKey = await chooseTemplate(values.template);

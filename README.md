@@ -27,7 +27,7 @@ Installing does not load a spoon. Load it from your Hammerspoon 2 config with `h
 
 ## Spoon names
 
-Use PascalCase, for example `MySpoon`. The name must start with a letter and contain only letters, digits, `_` and `-`, and it can't be the name of an `hs.spoons` member: `load`, `install`, `available`, `update`, `uninstall`, `installed` or `use`.
+The name (for example `MySpoon`) must start with a letter and contain only letters, digits, `_` and `-`, and it can't be the name of an `hs.spoons` member: `load`, `install`, `available`, `update`, `uninstall`, `installed` or `use`.
 
 ## Development
 
