@@ -1,0 +1,24 @@
+{
+  "name": "create-hammerspoon2-spoon",
+  "version": "0.1.0",
+  "description": "Scaffold a new Hammerspoon 2 spoon (JavaScript or TypeScript)",
+  "bin": {
+    "create-hammerspoon2-spoon": "bin/create-hammerspoon2-spoon.mjs"
+  },
+  "type": "module",
+  "files": [
+    "bin",
+    "Templates"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "hammerspoon",
+    "hammerspoon2",
+    "spoon",
+    "create",
+    "scaffold"
+  ],
+  "license": "ISC"
+}
