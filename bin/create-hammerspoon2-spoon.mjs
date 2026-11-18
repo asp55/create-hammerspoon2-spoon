@@ -28,7 +28,11 @@ Options:
   -t, --template <javascript|typescript>  Template to use (js / ts accepted). Prompts if omitted.
   -a, --author <"Name <email>">           Author for spoon.json (default: from git config)
   -d, --description <text>                Description for spoon.json. Prompts if omitted.
+  -r, --remote <url|none>                 Git remote to add as "origin" and push to. Prompts if omitted;
+                                          "none" (or empty) keeps the repo local. The remote must be an
+                                          EMPTY repository (no README, license or commits), or the push fails.
       --no-install                        TypeScript only: don't run npm install
+      --no-git                            Don't initialize a git repository or commit
   -h, --help                              Show this help
 
 <SpoonName> (e.g. MySpoon) must start with a letter, contain only letters, digits, "_" and "-",
@@ -111,6 +115,76 @@ async function chooseDescription(given, name) {
     }
 }
 
+// Returns the remote URL, or "" for none. Uses the -r value when given; otherwise asks when interactive.
+async function chooseRemote(given) {
+    const normalize = (v) => (/^(none|no|-)?$/i.test(v.trim()) ? "" : v.trim());
+    if (given !== undefined) return normalize(given);
+    if (!process.stdin.isTTY) return "";
+    const rl = createInterface({ input: process.stdin, output: process.stdout });
+    try {
+        return normalize(await rl.question("Git remote URL - must be an empty repository (Enter for none/local only): "));
+    } finally {
+        rl.close();
+    }
+}
+
+// "owner/repo" for a GitHub remote (https or ssh form), else "". hs.spoons.use() can only install from GitHub or a zip URL.
+function githubSlug(remote) {
+    const m = /^(?:https:\/\/(?:www\.)?github\.com\/|git@github\.com:|ssh:\/\/git@github\.com\/)([\w.-]+\/[\w.-]+?)(?:\.git)?\/?$/.exec(remote);
+    return m ? m[1] : "";
+}
+
+// Markdown for the templates' READMEs ({{ repoInstall }}); empty unless there's a GitHub remote.
+function repoInstallSection(slug, name, templateKey) {
+    if (!slug) return "";
+    const note =
+        templateKey === "typescript"
+            ? `Hammerspoon 2 installs the built \`spoons/${name}.spoon2\` folder from the repository, so run \`npm run package\` and commit the result whenever you change the spoon.`
+            : `The repository root is the spoon, so there is nothing to build.`;
+    return [
+        "## Install from GitHub",
+        "",
+        "Instead of installing by hand, let Hammerspoon 2 download, load and start the spoon from this repository. Put this in your Hammerspoon 2 config:",
+        "",
+        "```js",
+        `hs.spoons.use("${name}", { source: "${slug}", start: true });`,
+        "```",
+        "",
+        `It installs the spoon the first time it runs and just loads it afterwards. Add \`ref: "v1.0.0"\` (a tag or commit) to pin a version. ${note}`,
+        "",
+        "",
+    ].join("\n");
+}
+
+function git(args, cwd) {
+    execFileSync("git", args, { cwd, stdio: ["ignore", "pipe", "pipe"], encoding: "utf8" });
+}
+
+// Initializes a repo, commits the scaffold and pushes when a remote is given. Never throws:
+// the project already exists, so a git problem is reported as a warning with the manual fix.
+function initRepo(target, remote) {
+    const result = { committed: false, pushed: false };
+    const step = (label, args) => {
+        try {
+            git(args, target);
+            return true;
+        } catch (e) {
+            const detail = String(e.stderr || e.message).trim().split("\n")[0];
+            console.error(`warning: ${label} failed (${detail}).`);
+            return false;
+        }
+    };
+    if (!step("git init", ["init"])) return result;
+    if (!step("git add", ["add", "-A"])) return result;
+    if (!step("git commit", ["commit", "-m", "chore: scaffold spoon from create-hammerspoon2-spoon"])) return result;
+    result.committed = true;
+    if (remote) {
+        if (!step("git remote add", ["remote", "add", "origin", remote])) return result;
+        result.pushed = step("git push", ["push", "-u", "origin", "HEAD"]);
+    }
+    return result;
+}
+
 async function main() {
     let parsed;
     try {
@@ -120,7 +194,9 @@ async function main() {
                 template: { type: "string", short: "t" },
                 author: { type: "string", short: "a" },
                 description: { type: "string", short: "d" },
+                remote: { type: "string", short: "r" },
                 "no-install": { type: "boolean" },
+                "no-git": { type: "boolean" },
                 help: { type: "boolean", short: "h" },
             },
         });
@@ -135,9 +211,15 @@ async function main() {
     if (!NAME_PATTERN.test(name)) fail(`invalid spoon name "${name}": use letters, digits, "_" and "-", starting with a letter (e.g. MySpoon)`);
     if (RESERVED_NAMES.has(name)) fail(`"${name}" is reserved: it is the name of an hs.spoons member (reserved: ${[...RESERVED_NAMES].join(", ")})`);
 
+    if (values["no-git"] && values.remote && !/^(none|no|-)$/i.test(values.remote.trim())) {
+        fail("--remote can't be used with --no-git");
+    }
+
     const templateKey = await chooseTemplate(values.template);
     const template = TEMPLATES[templateKey];
     const description = (await chooseDescription(values.description, name)).replace(/\s+/g, " ").trim();
+    const remote = values["no-git"] ? "" : await chooseRemote(values.remote);
+    if (remote.startsWith("-")) fail(`invalid remote "${remote}"`);
     const tokens = {
         name,
         identifier: toIdentifier(name),
@@ -145,6 +227,7 @@ async function main() {
         packageName: `${name.toLowerCase()}-builder`,
         author: values.author ?? (gitAuthor() || "Your Name <you@example.com>"),
         description,
+        repoInstall: repoInstallSection(githubSlug(remote), name, templateKey),
     };
     const source = join(templatesRoot, template.dir);
     if (!existsSync(source)) fail(`template files not found at ${source}`);
@@ -174,6 +257,7 @@ async function main() {
 
     const rel = `${name}${template.outputSuffix}`;
     let installed = false;
+    let packaged = false;
     if (templateKey === "typescript") {
         // npm doesn't ship empty directories, so create the ones the build scripts expect.
         await mkdir(join(target, "build"), { recursive: true });
@@ -187,9 +271,26 @@ async function main() {
                 console.error("\nwarning: npm install failed; the project was still created. Run it yourself in the project folder.");
             }
         }
+        // With a remote, others install from the repo, so the first commit must include the built spoon.
+        if (remote && installed) {
+            console.log("\nBuilding the spoon (npm run package)...\n");
+            try {
+                execFileSync("npm", ["run", "package"], { cwd: target, stdio: "inherit" });
+                packaged = true;
+            } catch {
+                console.error("\nwarning: npm run package failed; run it and commit spoons/ before others install from the repo.");
+            }
+        }
     }
 
-    console.log(`\nCreated ${templateKey} spoon "${name}" in ./${rel}\n`);
+    let repo = null;
+    if (!values["no-git"]) repo = initRepo(target, remote);
+
+    console.log(`\nCreated ${templateKey} spoon "${name}" in ./${rel}`);
+    if (repo?.committed) console.log(`Initialized git repository with an initial commit${repo.pushed ? ` and pushed to ${remote}` : ""}.`);
+    if (packaged) console.log(`Built spoons/${name}.spoon2 and included it in the commit.`);
+    if (repo?.committed && remote && !repo.pushed) console.log(`Push manually when ready: git push -u origin HEAD`);
+    console.log();
     if (templateKey === "typescript") {
         console.log(
             [

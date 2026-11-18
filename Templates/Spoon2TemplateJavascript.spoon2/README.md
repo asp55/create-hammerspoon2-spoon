@@ -6,7 +6,7 @@
 
 Double-click the `{{ name }}.spoon2` bundle to install it into Hammerspoon 2. Installing does not load it.
 
-## Usage
+{{ repoInstall }}## Usage
 
 Load the spoon from your Hammerspoon 2 config:
 
