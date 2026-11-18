@@ -20,5 +20,13 @@
     "create",
     "scaffold"
   ],
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asp55/create-hammerspoon2-spoon.git"
+  },
+  "homepage": "https://github.com/asp55/create-hammerspoon2-spoon#readme",
+  "bugs": {
+    "url": "https://github.com/asp55/create-hammerspoon2-spoon/issues"
+  }
 }
