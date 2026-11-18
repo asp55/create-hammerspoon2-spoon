@@ -1,15 +1,15 @@
 
 const { createLogger } = require("./modules/Logger.js");
 
-const Logger = createLogger("SpoonName");
+const Logger = createLogger("{{ name }}");
 
 
 //-----------------------------------------
 // Public API
 //-----------------------------------------
-const SpoonName = {};
+const {{ identifier }} = {};
 
-SpoonName.init = function () {
+{{ identifier }}.init = function () {
     // Called automatically by hs.spoons.load(). author/description/version are already set on
     // `this` by this point - safe to log or read, but this could run more than once, so avoid
     // anything that shouldn't happen twice.
@@ -18,18 +18,18 @@ SpoonName.init = function () {
 
 
 
-SpoonName.start = function() {
+{{ identifier }}.start = function() {
     Logger.debug("start()");
-    return SpoonName;
+    return {{ identifier }};
 }
 
-SpoonName.stop = function() {
+{{ identifier }}.stop = function() {
     Logger.debug("stop()");
-    return SpoonName;
+    return {{ identifier }};
 }
 
 // Properties
-Object.defineProperties(SpoonName, {
+Object.defineProperties({{ identifier }}, {
     // Sets the level on this spoon's loggers: "error" | "warn" | "info" | "log" | "debug"
     logLevel: {
         get: () => Logger.level,
@@ -38,4 +38,4 @@ Object.defineProperties(SpoonName, {
     },
 });
 
-module.exports = SpoonName;
+module.exports = {{ identifier }};

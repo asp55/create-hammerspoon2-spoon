@@ -1,6 +1,6 @@
 {
-    "name": "Spoon2Template",
-    "author": "Andrew Parnell <aparnell@gmail.com>",
+    "name": "{{ name }}",
+    "author": "{{ author }}",
     "version": "0.0.0",
-    "description": "A spoon template"
+    "description": "{{ description }}"
 }

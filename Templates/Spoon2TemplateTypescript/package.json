@@ -1,8 +1,9 @@
 {
-  "name": "spoon2template",
-  "version": "1.0.0",
+  "name": "{{ packageName }}",
+  "version": "0.0.0",
   "private": true,
-  "description": "Template project for building Hammerspoon 2 spoons in TypeScript",
+  "description": "Build tooling for the {{ name }} spoon",
+  "author": "{{ author }}",
   "scripts": {
     "package": "npm run build && node npm_scripts/package.mjs",
     "build": "npm run clean-build && npm run compile && npm run copy-assets",

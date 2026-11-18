@@ -1,6 +1,6 @@
 import { createLogger, type LogLevel } from "./modules/Logger";
 
-const Logger = createLogger("Spoon2Template");
+const Logger = createLogger("{{ name }}");
 
 // Properties hs.spoons.load() copies onto the exported object from spoon.json.
 interface SpoonMetadata {
@@ -9,37 +9,37 @@ interface SpoonMetadata {
     version?: string;
 }
 
-interface Spoon2Template extends SpoonMetadata {
+interface {{ identifier }} extends SpoonMetadata {
     init(): void;
-    start(): Spoon2Template;
-    stop(): Spoon2Template;
+    start(): {{ identifier }};
+    stop(): {{ identifier }};
     logLevel: LogLevel;
 }
 
 //-----------------------------------------
 // Public API
 //-----------------------------------------
-const Spoon2Template = {} as Spoon2Template;
+const {{ identifier }} = {} as {{ identifier }};
 
-Spoon2Template.init = function (this: Spoon2Template) {
+{{ identifier }}.init = function (this: {{ identifier }}) {
     // Called automatically by hs.spoons.load(). author/description/version are already set on
     // `this` by this point - safe to log or read, but this could run more than once, so avoid
     // anything that shouldn't happen twice.
     Logger.log(`v${this.version} initialized`);
 };
 
-Spoon2Template.start = function () {
+{{ identifier }}.start = function () {
     Logger.debug("start()");
-    return Spoon2Template;
+    return {{ identifier }};
 };
 
-Spoon2Template.stop = function () {
+{{ identifier }}.stop = function () {
     Logger.debug("stop()");
-    return Spoon2Template;
+    return {{ identifier }};
 };
 
 // Properties
-Object.defineProperties(Spoon2Template, {
+Object.defineProperties({{ identifier }}, {
     // Sets the level on this spoon's loggers: "error" | "warn" | "info" | "log" | "debug"
     logLevel: {
         get: () => Logger.level,
@@ -48,4 +48,4 @@ Object.defineProperties(Spoon2Template, {
     },
 });
 
-export = Spoon2Template;
+export = {{ identifier }};
