@@ -22,7 +22,7 @@ const NAME_PATTERN = /^[A-Za-z][A-Za-z0-9_-]*$/;
 const RESERVED_NAMES = new Set(["load", "install", "available", "update", "uninstall", "installed", "use"]);
 const TEXT_FILE = /\.(js|mjs|ts|json|md|txt)$|(^|\/)(_gitignore|\.gitignore)$/;
 
-const USAGE = `Usage: create-hammerspoon2-spoon <spoonName> [options]
+const USAGE = `Usage: create-hammerspoon2-spoon <SpoonName> [options]
 
 Options:
   -t, --template <javascript|typescript>  Template to use (js / ts accepted). Prompts if omitted.
@@ -31,7 +31,8 @@ Options:
       --no-install                        TypeScript only: don't run npm install
   -h, --help                              Show this help
 
-<spoonName> must start with a letter and contain only letters, digits, "_" and "-".`;
+<SpoonName> should be PascalCase (e.g. MySpoon). It must start with a letter, contain only letters, digits, "_" and "-",
+and not be the name of an hs.spoons member (load, install, available, update, uninstall, installed, use).`;
 
 function fail(message) {
     console.error(`error: ${message}`);
@@ -128,10 +129,10 @@ async function main() {
     }
     const { values, positionals } = parsed;
     if (values.help) return console.log(USAGE);
-    if (positionals.length !== 1) fail(`expected exactly one <spoonName>\n\n${USAGE}`);
+    if (positionals.length !== 1) fail(`expected exactly one <SpoonName>\n\n${USAGE}`);
 
     const name = positionals[0];
-    if (!NAME_PATTERN.test(name)) fail(`invalid spoon name "${name}": use letters, digits, "_" and "-", starting with a letter`);
+    if (!NAME_PATTERN.test(name)) fail(`invalid spoon name "${name}": use letters, digits, "_" and "-", starting with a letter (PascalCase recommended, e.g. MySpoon)`);
     if (RESERVED_NAMES.has(name)) fail(`"${name}" is reserved: it is the name of an hs.spoons member (reserved: ${[...RESERVED_NAMES].join(", ")})`);
 
     const templateKey = await chooseTemplate(values.template);
