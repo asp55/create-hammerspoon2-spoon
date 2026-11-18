@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    // Hammerspoon 2 loads spoons with require(), so emit CommonJS.
+    "target": "ES2022",
+    "module": "commonjs",
+    "lib": ["ES2022"],
+
+    "rootDir": "src",
+    "outDir": "build",
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+
+    // No @types/* packages (e.g. @types/node): the runtime is JavaScriptCore +
+    // Hammerspoon, not Node. Globals come from types/*.d.ts instead.
+    "types": []
+  },
+  "include": ["src/**/*.ts", "types/**/*.d.ts"]
+}

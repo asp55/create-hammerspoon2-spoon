@@ -1,0 +1,24 @@
+{
+  "name": "spoon2template",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Template project for building Hammerspoon 2 spoons in TypeScript",
+  "scripts": {
+    "package": "npm run build && node npm_scripts/package.mjs",
+    "build": "npm run clean-build && npm run compile && npm run copy-assets",
+    "clean": "npm run clean-build && npm run clean-package",
+    "clean-package": "node npm_scripts/clean-package.mjs",
+    "clean-build": "node npm_scripts/clean-build.mjs",
+    "compile": "tsc -p tsconfig.json",
+    "copy-assets": "node npm_scripts/copy-assets.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "keywords": [
+    "hammerspoon",
+    "spoon"
+  ],
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}
