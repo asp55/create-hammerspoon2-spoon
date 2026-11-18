@@ -1,6 +1,6 @@
 {
   "name": "create-hammerspoon2-spoon",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Scaffold a new Hammerspoon 2 spoon (JavaScript or TypeScript)",
   "bin": {
     "create-hammerspoon2-spoon": "bin/create-hammerspoon2-spoon.mjs"
